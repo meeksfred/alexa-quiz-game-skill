@@ -5,15 +5,13 @@ const Alexa = require('alexa-sdk');
 //TODO: The items below this comment need your attention
 //=========================================================================================================================================
 
-//Replace with your app ID (OPTIONAL).  You can find this value at the top of your skill's page on http://developer.amazon.com.
-//Make sure to enclose your value in quotes, like this:  var APP_ID = "amzn1.ask.skill.bb4045e6-b3e8-4133-b650-72923c5980f1";
-var APP_ID = undefined;
+var APP_ID = "amzn1.ask.skill.9f538548-1c39-4cf0-8b83-4c9f3eb50a2c";
 
 //This function returns a descriptive sentence about your data.  Before a user starts a quiz, they can ask about a specific data element,
 //like "Ohio."  The skill will speak the sentence from this function, pulling the data values from the appropriate record in your data.
 function getSpeechDescription(item)
 {
-    var sentence = item.StateName + " is the " + item.StatehoodOrder + "th state, admitted to the Union in " + item.StatehoodYear + ".  The capital of " + item.StateName + " is " + item.Capital + ", and the abbreviation for " + item.StateName + " is <break strength='strong'/><say-as interpret-as='spell-out'>" + item.Abbreviation + "</say-as>.  I've added " + item.StateName + " to your Alexa app.  Which other state or capital would you like to know about?";
+    var sentence = "The " + item.TeamName + ", located in " + item.TeamCity + " were founded in " + item.FoundingYear + ". The " + item.TeamName + " have " + item.HallOfFamePlayers + " in the Hall of Fame, and the abbreviation for the " + item.TeamName + " is <break strength='strong'/><say-as interpret-as='spell-out'>" + item.Abbreviation + "</say-as>.  I've added " + item.TeamName + " to your Alexa app.  Which other Major League baseball team would you like to know about?";
     return sentence;
 }
 
@@ -22,25 +20,23 @@ function getSpeechDescription(item)
 //structure for each property of your data.
 function getQuestion(counter, property, item)
 {
-    return "Here is your " + counter + "th question.  What is the " + formatCasing(property) + " of "  + item.StateName + "?";
+    // return "Here is your " + counter + "th question.  What is the " + formatCasing(property) + " of "  + item.StateName + "?";
 
-    /*
     switch(property)
     {
-        case "City":
-            return "Here is your " + counter + "th question.  In what city do the " + item.League + "'s "  + item.Mascot + " play?";
+        case "TeamName":
+            return "Here is your " + counter + "th question.  What city or state do the " + item.TeamName + " play in?";
         break;
-        case "Sport":
-            return "Here is your " + counter + "th question.  What sport do the " + item.City + " " + item.Mascot + " play?";
+        case "FoundingYear":
+            return "Here is your " + counter + "th question.  In what year was the " + item.TeamName + " organization founded?";
         break;
-        case "HeadCoach":
-            return "Here is your " + counter + "th question.  Who is the head coach of the " + item.City + " " + item.Mascot + "?";
+        case "HallOfFamePlayers":
+            return "Here is your " + counter + "th question.  How many players do the " + item.TeamName + " have in the Hall of Fame?";
         break;
-        default:
-            return "Here is your " + counter + "th question.  What is the " + formatCasing(property) + " of the "  + item.Mascot + "?";
+        case "Abbreviation":
+            return "Here is your " + counter + "th question.  What is the team " + formatCasing(property) + " for the "  + item.TeamName + "?";
         break;
     }
-    */
 }
 
 //This is the function that returns an answer to your user during the quiz.  Much like the "getQuestion" function above, you can use a
@@ -51,10 +47,16 @@ function getAnswer(property, item)
     switch(property)
     {
         case "Abbreviation":
-            return "The " + formatCasing(property) + " of " + item.StateName + " is <say-as interpret-as='spell-out'>" + item[property] + "</say-as>. "
+            return "The " + formatCasing(property) + " of the " + item.TeamCity + item.TeamName + " is <say-as interpret-as='spell-out'>" + item[property] + "</say-as>. "
         break;
-        default:
-            return "The " + formatCasing(property) + " of " + item.StateName + " is " + item[property] + ". "
+        case "TeamName":
+            return "The " + item[property] + " play in " + item.TeamCity + ". "
+        break;
+        case "FoundingYear":
+            return "The " + item.TeamCity + item.TeamName + " were founded in " + item[property] + ". "
+        break;
+        case "HallOfFamePlayers":
+            return "The " + item.TeamCity + item.TeamName + " have " + item[property] + " players in the Hall of Fame. "
         break;
     }
 }
@@ -71,19 +73,19 @@ var speechConsWrong = ["Argh", "Aw man", "Blarg", "Blast", "Boo", "Bummer", "Dar
 "Mamma mia", "Oh boy", "Oh dear", "Oof", "Ouch", "Ruh roh", "Shucks", "Uh oh", "Wah wah", "Whoops a daisy", "Yikes"];
 
 //This is the welcome message for when a user starts the skill without a specific intent.
-var WELCOME_MESSAGE = "Welcome to the United States Quiz Game!  You can ask me about any of the fifty states and their capitals, or you can ask me to start a quiz.  What would you like to do?";
+var WELCOME_MESSAGE = "Welcome to Max's Baseball Quiz Game!  You can ask me about any of the thirty Major League teams, or you can ask me to start a quiz.  What would you like to do?";
 
 //This is the message a user will hear when they start a quiz.
-var START_QUIZ_MESSAGE = "OK.  I will ask you 10 questions about the United States.";
+var START_QUIZ_MESSAGE = "OK.  I will ask you 10 questions about Major League Baseball teams.";
 
 //This is the message a user will hear when they try to cancel or stop the skill, or when they finish a quiz.
-var EXIT_SKILL_MESSAGE = "Thank you for playing the United States Quiz Game!  Let's play again soon!";
+var EXIT_SKILL_MESSAGE = "Thank you for playing Max's Baseball Quiz Game!  Let's play again soon!";
 
 //This is the message a user will hear after they ask (and hear) about a specific data element.
-var REPROMPT_SPEECH = "Which other state or capital would you like to know about?";
+var REPROMPT_SPEECH = "Which other team would you like to know about?";
 
 //This is the message a user will hear when they ask Alexa for help in your skill.
-var HELP_MESSAGE = "I know lots of things about the United States.  You can ask me about a state or a capital, and I'll tell you what I know.  You can also test your knowledge by asking me to start a quiz.  What would you like to do?";
+var HELP_MESSAGE = "I know lots of things about Major League Baseball teams.  You can ask me about any team, and I'll tell you what I know.  You can also test your knowledge by asking me to start a quiz.  What would you like to do?";
 
 
 //This is the response a user will receive when they ask about something we weren't expecting.  For example, say "pizza" to your
@@ -101,7 +103,7 @@ function getFinalScore(score, counter) { return "Your final score is " + score +
 
 //If you don't want to use cards in your skill, set the USE_CARDS_FLAG to false.  If you set it to true, you will need an image for each
 //item in your data.
-var USE_CARDS_FLAG = true;
+var USE_CARDS_FLAG = false;
 
 //This is what your card title will be.  For our example, we use the name of the state the user requested.
 function getCardTitle(item) { return item.StateName;}
@@ -117,56 +119,36 @@ function getLargeImage(item) { return "https://m.media-amazon.com/images/G/01/mo
 //TODO: Replace this data with your own.
 //=========================================================================================================================================
 var data = [
-                {StateName: "Alabama",        Abbreviation: "AL", Capital: "Montgomery",     StatehoodYear: 1819, StatehoodOrder: 22 },
-                {StateName: "Alaska",         Abbreviation: "AK", Capital: "Juneau",         StatehoodYear: 1959, StatehoodOrder: 49 },
-                {StateName: "Arizona",        Abbreviation: "AZ", Capital: "Phoenix",        StatehoodYear: 1912, StatehoodOrder: 48 },
-                {StateName: "Arkansas",       Abbreviation: "AR", Capital: "Little Rock",    StatehoodYear: 1836, StatehoodOrder: 25 },
-                {StateName: "California",     Abbreviation: "CA", Capital: "Sacramento",     StatehoodYear: 1850, StatehoodOrder: 31 },
-                {StateName: "Colorado",       Abbreviation: "CO", Capital: "Denver",         StatehoodYear: 1876, StatehoodOrder: 38 },
-                {StateName: "Connecticut",    Abbreviation: "CT", Capital: "Hartford",       StatehoodYear: 1788, StatehoodOrder: 5 },
-                {StateName: "Delaware",       Abbreviation: "DE", Capital: "Dover",          StatehoodYear: 1787, StatehoodOrder: 1 },
-                {StateName: "Florida",        Abbreviation: "FL", Capital: "Tallahassee",    StatehoodYear: 1845, StatehoodOrder: 27 },
-                {StateName: "Georgia",        Abbreviation: "GA", Capital: "Atlanta",        StatehoodYear: 1788, StatehoodOrder: 4 },
-                {StateName: "Hawaii",         Abbreviation: "HI", Capital: "Honolulu",       StatehoodYear: 1959, StatehoodOrder: 50 },
-                {StateName: "Idaho",          Abbreviation: "ID", Capital: "Boise",          StatehoodYear: 1890, StatehoodOrder: 43 },
-                {StateName: "Illinois",       Abbreviation: "IL", Capital: "Springfield",    StatehoodYear: 1818, StatehoodOrder: 21 },
-                {StateName: "Indiana",        Abbreviation: "IN", Capital: "Indianapolis",   StatehoodYear: 1816, StatehoodOrder: 19 },
-                {StateName: "Iowa",           Abbreviation: "IA", Capital: "Des Moines",     StatehoodYear: 1846, StatehoodOrder: 29 },
-                {StateName: "Kansas",         Abbreviation: "KS", Capital: "Topeka",         StatehoodYear: 1861, StatehoodOrder: 34 },
-                {StateName: "Kentucky",       Abbreviation: "KY", Capital: "Frankfort",      StatehoodYear: 1792, StatehoodOrder: 15 },
-                {StateName: "Louisiana",      Abbreviation: "LA", Capital: "Baton Rouge",    StatehoodYear: 1812, StatehoodOrder: 18 },
-                {StateName: "Maine",          Abbreviation: "ME", Capital: "Augusta",        StatehoodYear: 1820, StatehoodOrder: 23 },
-                {StateName: "Maryland",       Abbreviation: "MD", Capital: "Annapolis",      StatehoodYear: 1788, StatehoodOrder: 7 },
-                {StateName: "Massachusetts",  Abbreviation: "MA", Capital: "Boston",         StatehoodYear: 1788, StatehoodOrder: 6 },
-                {StateName: "Michigan",       Abbreviation: "MI", Capital: "Lansing",        StatehoodYear: 1837, StatehoodOrder: 26 },
-                {StateName: "Minnesota",      Abbreviation: "MN", Capital: "St. Paul",       StatehoodYear: 1858, StatehoodOrder: 32 },
-                {StateName: "Mississippi",    Abbreviation: "MS", Capital: "Jackson",        StatehoodYear: 1817, StatehoodOrder: 20 },
-                {StateName: "Missouri",       Abbreviation: "MO", Capital: "Jefferson City", StatehoodYear: 1821, StatehoodOrder: 24 },
-                {StateName: "Montana",        Abbreviation: "MT", Capital: "Helena",         StatehoodYear: 1889, StatehoodOrder: 41 },
-                {StateName: "Nebraska",       Abbreviation: "NE", Capital: "Lincoln",        StatehoodYear: 1867, StatehoodOrder: 37 },
-                {StateName: "Nevada",         Abbreviation: "NV", Capital: "Carson City",    StatehoodYear: 1864, StatehoodOrder: 36 },
-                {StateName: "New Hampshire",  Abbreviation: "NH", Capital: "Concord",        StatehoodYear: 1788, StatehoodOrder: 9 },
-                {StateName: "New Jersey",     Abbreviation: "NJ", Capital: "Trenton",        StatehoodYear: 1787, StatehoodOrder: 3 },
-                {StateName: "New Mexico",     Abbreviation: "NM", Capital: "Santa Fe",       StatehoodYear: 1912, StatehoodOrder: 47 },
-                {StateName: "New York",       Abbreviation: "NY", Capital: "Albany",         StatehoodYear: 1788, StatehoodOrder: 11 },
-                {StateName: "North Carolina", Abbreviation: "NC", Capital: "Raleigh",        StatehoodYear: 1789, StatehoodOrder: 12 },
-                {StateName: "North Dakota",   Abbreviation: "ND", Capital: "Bismarck",       StatehoodYear: 1889, StatehoodOrder: 39 },
-                {StateName: "Ohio",           Abbreviation: "OH", Capital: "Columbus",       StatehoodYear: 1803, StatehoodOrder: 17 },
-                {StateName: "Oklahoma",       Abbreviation: "OK", Capital: "Oklahoma City",  StatehoodYear: 1907, StatehoodOrder: 46 },
-                {StateName: "Oregon",         Abbreviation: "OR", Capital: "Salem",          StatehoodYear: 1859, StatehoodOrder: 33 },
-                {StateName: "Pennsylvania",   Abbreviation: "PA", Capital: "Harrisburg",     StatehoodYear: 1787, StatehoodOrder: 2 },
-                {StateName: "Rhode Island",   Abbreviation: "RI", Capital: "Providence",     StatehoodYear: 1790, StatehoodOrder: 13 },
-                {StateName: "South Carolina", Abbreviation: "SC", Capital: "Columbia",       StatehoodYear: 1788, StatehoodOrder: 8 },
-                {StateName: "South Dakota",   Abbreviation: "SD", Capital: "Pierre",         StatehoodYear: 1889, StatehoodOrder: 40 },
-                {StateName: "Tennessee",      Abbreviation: "TN", Capital: "Nashville",      StatehoodYear: 1796, StatehoodOrder: 16 },
-                {StateName: "Texas",          Abbreviation: "TX", Capital: "Austin",         StatehoodYear: 1845, StatehoodOrder: 28 },
-                {StateName: "Utah",           Abbreviation: "UT", Capital: "Salt Lake City", StatehoodYear: 1896, StatehoodOrder: 45 },
-                {StateName: "Vermont",        Abbreviation: "VT", Capital: "Montpelier",     StatehoodYear: 1791, StatehoodOrder: 14 },
-                {StateName: "Virginia",       Abbreviation: "VA", Capital: "Richmond",       StatehoodYear: 1788, StatehoodOrder: 10 },
-                {StateName: "Washington",     Abbreviation: "WA", Capital: "Olympia",        StatehoodYear: 1889, StatehoodOrder: 42 },
-                {StateName: "West Virginia",  Abbreviation: "WV", Capital: "Charleston",     StatehoodYear: 1863, StatehoodOrder: 35 },
-                {StateName: "Wisconsin",      Abbreviation: "WI", Capital: "Madison",        StatehoodYear: 1848, StatehoodOrder: 30 },
-                {StateName: "Wyoming",        Abbreviation: "WY", Capital: "Cheyenne",       StatehoodYear: 1890, StatehoodOrder: 44 }
+                {TeamName: "Diamondbacks",   Abbreviation: "ARI", TeamCity: "Arizona",      FoundingYear: 1997, HallOfFamePlayers: 1 },
+                {TeamName: "Braves",         Abbreviation: "ATL", TeamCity: "Atlanta",      FoundingYear: 1871, HallOfFamePlayers: 12 },
+                {TeamName: "Orioles",        Abbreviation: "BAL", TeamCity: "Baltimore",    FoundingYear: 1901, HallOfFamePlayers: 8 },
+                {TeamName: "Red Sox",        Abbreviation: "BOS", TeamCity: "Boston",       FoundingYear: 1901, HallOfFamePlayers: 13 },
+                {TeamName: "Cubs",           Abbreviation: "CHC", TeamCity: "Chicago",      FoundingYear: 1876, HallOfFamePlayers: 15 },
+                {TeamName: "White Sox",      Abbreviation: "CHW", TeamCity: "Chicago",      FoundingYear: 1900, HallOfFamePlayers: 11 },
+                {TeamName: "Reds",           Abbreviation: "CIN", TeamCity: "Cincinatti",   FoundingYear: 1881, HallOfFamePlayers: 10 },
+                {TeamName: "Indians",        Abbreviation: "CLE", TeamCity: "Cleveland",    FoundingYear: 1901, HallOfFamePlayers: 14 },
+                {TeamName: "Rockies",        Abbreviation: "COL", TeamCity: "Colorado",     FoundingYear: 1993, HallOfFamePlayers: 0 },
+                {TeamName: "Tigers",         Abbreviation: "DET", TeamCity: "Detroit",      FoundingYear: 1901, HallOfFamePlayers: 11 },
+                {TeamName: "Astros",         Abbreviation: "HOU", TeamCity: "Houston",      FoundingYear: 1962, HallOfFamePlayers: 2 },
+                {TeamName: "Royals",         Abbreviation: "KC",  TeamCity: "Kansas City",  FoundingYear: 1969, HallOfFamePlayers: 1 },
+                {TeamName: "Angels",         Abbreviation: "LAA", TeamCity: "Anaheim",      FoundingYear: 1961, HallOfFamePlayers: 0 },
+                {TeamName: "Dodgers",        Abbreviation: "LAD", TeamCity: "Los Angeles",  FoundingYear: 1883, HallOfFamePlayers: 15 },
+                {TeamName: "Marlins",        Abbreviation: "MIA", TeamCity: "Miami",        FoundingYear: 1993, HallOfFamePlayers: 0 },
+                {TeamName: "Brewers",        Abbreviation: "MIL", TeamCity: "Milwaukee",    FoundingYear: 1969, HallOfFamePlayers: 2 },
+                {TeamName: "Twins",          Abbreviation: "MIN", TeamCity: "Minnesota",    FoundingYear: 1901, HallOfFamePlayers: 8 },
+                {TeamName: "Mets",           Abbreviation: "NYM", TeamCity: "New York",     FoundingYear: 1962, HallOfFamePlayers: 2 },
+                {TeamName: "Yankees",        Abbreviation: "NYY", TeamCity: "New York",     FoundingYear: 1901, HallOfFamePlayers: 24 },
+                {TeamName: "Athletics",      Abbreviation: "OAK", TeamCity: "Oakland",      FoundingYear: 1901, HallOfFamePlayers: 10 },
+                {TeamName: "Phillies",       Abbreviation: "PHI", TeamCity: "Philadelphia", FoundingYear: 1883, HallOfFamePlayers: 6 },
+                {TeamName: "Pirates",        Abbreviation: "PIT", TeamCity: "Pittsburgh",   FoundingYear: 1881, HallOfFamePlayers: 13 },
+                {TeamName: "Padres",         Abbreviation: "SD",  TeamCity: "San Diego",    FoundingYear: 1969, HallOfFamePlayers: 2 },
+                {TeamName: "Giants",         Abbreviation: "SF",  TeamCity: "San Francisco",FoundingYear: 1883, HallOfFamePlayers: 24 },
+                {TeamName: "Mariners",       Abbreviation: "SEA", TeamCity: "Seattle",      FoundingYear: 1977, HallOfFamePlayers: 1 },
+                {TeamName: "Cardinals",      Abbreviation: "STL", TeamCity: "Saint Louis",  FoundingYear: 1881, HallOfFamePlayers: 10 },
+                {TeamName: "Rays",           Abbreviation: "TB",  TeamCity: "Tampa Bay",    FoundingYear: 1998, HallOfFamePlayers: 0 },
+                {TeamName: "Rangers",        Abbreviation: "TEX", TeamCity: "Texas",        FoundingYear: 1961, HallOfFamePlayers: 2 },
+                {TeamName: "Blue Jays",      Abbreviation: "TOR", TeamCity: "Toronto",      FoundingYear: 1977, HallOfFamePlayers: 1 },
+                {TeamName: "Nationals",      Abbreviation: "WSH", TeamCity: "Washington",   FoundingYear: 1969, HallOfFamePlayers: 3 }
             ];
 
 //=========================================================================================================================================
